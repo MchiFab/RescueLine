@@ -11,6 +11,7 @@ import lejos.hardware.port.I2CPort;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
 import lejos.hardware.port.SensorPort;
+import lejos.hardware.Battery;
 
 import java.io.Console;
 import java.util.HashMap;
@@ -34,6 +35,11 @@ public class Program {
 
 	public static void main(String[] args) {
 		try {
+			if (isBatteryLow()) {
+				LCD.drawString("Battery low", 0, 0);
+				System.exit(0);
+			}
+
 			initialize();
 
 			Thread t = new Thread() {
@@ -61,16 +67,21 @@ public class Program {
 
 			while (true) {
 
-				if (Button.ENTER.isDown()) {
+				if (Button.DOWN.isDown()) {
+					System.out.println(Battery.getBatteryCurrent());
+					System.out.println(Battery.getVoltage());
+				}
+
+				if (Button.ENTER.isDown() || isBatteryLow()) {
 					Motors.MotorStop();
 					break;
 				}
-
-				if (Button.RIGHT.isDown())
-					nav.Turn90Left();
-
-				if (Button.LEFT.isDown())
-					nav.Turn90Right();
+//
+//				if (Button.RIGHT.isDown())
+//					nav.Turn90Left();
+//
+//				if (Button.LEFT.isDown())
+//					nav.Turn90Right();
 //
 //			colorL = ColorSensor.getColorLeft();
 //			colorM = ColorSensor.getColorMiddle();
@@ -132,5 +143,14 @@ public class Program {
 		colorL = SensorManager.getInstance().getColor().getColorLeft();
 		colorM = SensorManager.getInstance().getColor().getColorMiddle();
 		colorR = SensorManager.getInstance().getColor().getColorRight();
+	}
+
+	/**
+	 * Check if battery level is low
+	 * 
+	 * @return True if battery level is below 5.5V
+	 */
+	private static boolean isBatteryLow() {
+		return Battery.getVoltage() < 5.5f;
 	}
 }
