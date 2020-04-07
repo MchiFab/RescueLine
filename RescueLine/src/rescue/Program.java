@@ -76,12 +76,12 @@ public class Program {
 					Motors.MotorStop();
 					break;
 				}
-//
-//				if (Button.RIGHT.isDown())
-//					nav.Turn90Left();
-//
-//				if (Button.LEFT.isDown())
-//					nav.Turn90Right();
+
+				if (Button.RIGHT.isDown())
+					nav.Turn90Left();
+
+				if (Button.LEFT.isDown())
+					nav.Turn90Right();
 //
 //			colorL = ColorSensor.getColorLeft();
 //			colorM = ColorSensor.getColorMiddle();
