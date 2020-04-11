@@ -22,6 +22,11 @@ public class EV3SensorMux {
 	public static final int MUX_PORT_C2 = 0xA2;
 	public static final int MUX_PORT_C3 = 0xA4;
 
+	public static final int REG_GETDATA = 0x54;
+	public static final int REG_SETMODE = 0x52;
+	public static final byte MODE_ANGLE = 0;
+	public static final byte MODE_CM = 0;
+
 	public I2CPort getPort() {
 		return port;
 	}

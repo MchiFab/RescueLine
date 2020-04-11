@@ -58,7 +58,7 @@ public class Navigation {
 	/**
 	 * Turn robot 180 degrees to the left
 	 */
-	public void Turn180Left() {
+	public void turn180Left() {
 		SensorManager.getInstance().getGyro().resetAngleMax();
 
 		while (SensorManager.getInstance().getGyro().getAngle() > 180) {
@@ -69,7 +69,7 @@ public class Navigation {
 	/**
 	 * Turn robot 180 degrees to the right
 	 */
-	public void Turn180Right() {
+	public void turn180Right() {
 		SensorManager.getInstance().getGyro().resetAngleMin();
 
 		while (SensorManager.getInstance().getGyro().getAngle() < 180) {
@@ -80,7 +80,7 @@ public class Navigation {
 	/**
 	 * Turn robot 90 degrees to the left
 	 */
-	public void Turn90Left() {
+	public void turn90Left() {
 		SensorManager.getInstance().getGyro().resetAngleMax();
 
 		while (SensorManager.getInstance().getGyro().getAngle() > 270) {
@@ -91,7 +91,7 @@ public class Navigation {
 	/**
 	 * Turn robot 90 degrees to the right
 	 */
-	public void Turn90Right() {
+	public void turn90Right() {
 		SensorManager.getInstance().getGyro().resetAngleMin();
 
 		while (SensorManager.getInstance().getGyro().getAngle() < 90) {

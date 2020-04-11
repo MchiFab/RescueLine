@@ -13,6 +13,7 @@ public class SensorManager {
 	private ColorSensor color;
 	private EV3SensorMux mux;
 	private I2CGyroSensor gyro;
+	private I2CUltrasonicSensor ultrasonic;
 	private static SensorManager instance;
 
 	/**
@@ -39,6 +40,10 @@ public class SensorManager {
 		return gyro;
 	}
 
+	public I2CUltrasonicSensor getUltrasonic() {
+		return ultrasonic;
+	}
+
 	/**
 	 * Initialize all sensors
 	 * 
@@ -48,18 +53,19 @@ public class SensorManager {
 	 * @param muxPort     Port of Multiplexer
 	 */
 	public void initialize(Port colorRight, Port colorMiddle, Port colorLeft, Port muxPort) {
-		color = new ColorSensor();
+		// color = new ColorSensor();
 		mux = new EV3SensorMux(muxPort);
 		gyro = new I2CGyroSensor(mux.getPort(), EV3SensorMux.MUX_PORT_C2);
+		ultrasonic = new I2CUltrasonicSensor(mux.getPort(), EV3SensorMux.MUX_PORT_C1);
 
-		color.initialize(colorRight, colorMiddle, colorLeft);
+		// color.initialize(colorRight, colorMiddle, colorLeft);
 	}
 
 	/**
 	 * Dispose all sensors
 	 */
 	public void dispose() {
-		color.dispose();
+		// color.dispose();
 		mux.dispose();
 	}
 }

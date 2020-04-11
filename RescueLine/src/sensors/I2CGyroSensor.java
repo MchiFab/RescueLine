@@ -15,13 +15,9 @@ public class I2CGyroSensor extends I2CSensor {
 	private int angle;
 	private int realAngle;
 
-	private static final byte REG_GETDATA = 0x54;
-	private static final int REG_SETMODE = 0x52;
-	private static final byte MODE_ANGLE = 0;
-
 	public I2CGyroSensor(I2CPort port, int address) {
 		super(port, address);
-		sendData(REG_SETMODE, MODE_ANGLE);
+		sendData(EV3SensorMux.REG_SETMODE, EV3SensorMux.MODE_ANGLE);
 		angle = -1;
 		realAngle = 0;
 	}
@@ -49,7 +45,7 @@ public class I2CGyroSensor extends I2CSensor {
 	 */
 	public int getAngle() {
 		byte[] buf = new byte[1];
-		getData(REG_GETDATA, buf, 1); // Get degrees as byte (-128 - 127)
+		getData(EV3SensorMux.REG_GETDATA, buf, 1); // Get degrees as byte (-128 - 127)
 
 		prevAngle = angle;
 		angle = buf[0] + 128; // Turn to natural byte (0 - 255)
