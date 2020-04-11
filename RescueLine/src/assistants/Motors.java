@@ -15,7 +15,7 @@ public class Motors {
 	private static EV3LargeRegulatedMotor motorRight;
 	private static EV3LargeRegulatedMotor motorMiddle;
 
-	private static final int MOTOR_SPEED = 150;
+	private static final int MOTOR_SPEED = 300;
 
 	/*
 	 * Initializing all three motors and setting their speed, synchronizes the two

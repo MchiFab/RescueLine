@@ -28,9 +28,6 @@ import lejos.robotics.*;
 public class Program {
 
 	private static DecimalFormat d = new DecimalFormat("0.00");
-	private static float[] colorL;
-	private static float[] colorM;
-	private static float[] colorR;
 	private static Navigation nav;
 
 	public static void main(String[] args) {
@@ -67,10 +64,10 @@ public class Program {
 
 			while (true) {
 
-				if (Button.DOWN.isDown()) {
-					System.out.println(Battery.getBatteryCurrent());
-					System.out.println(Battery.getVoltage());
-				}
+				if (SensorManager.getInstance().getUltrasonic().getDistance() < 100)
+					nav.turn180Right();
+				else
+					Motors.forward(0);
 
 				if (Button.ENTER.isDown() || isBatteryLow()) {
 					Motors.MotorStop();
@@ -78,10 +75,10 @@ public class Program {
 				}
 
 				if (Button.RIGHT.isDown())
-					nav.Turn90Left();
+					nav.turn90Left();
 
 				if (Button.LEFT.isDown())
-					nav.Turn90Right();
+					nav.turn90Right();
 //
 //			colorL = ColorSensor.getColorLeft();
 //			colorM = ColorSensor.getColorMiddle();
@@ -135,14 +132,7 @@ public class Program {
 		Motors.initialize(MotorPort.D, MotorPort.B, MotorPort.A);
 		SensorManager.getInstance().initialize(SensorPort.S1, SensorPort.S2, SensorPort.S3, SensorPort.S4);
 
-		colorL = new float[3];
-		colorM = new float[3];
-		colorR = new float[3];
 		nav = new Navigation();
-
-		colorL = SensorManager.getInstance().getColor().getColorLeft();
-		colorM = SensorManager.getInstance().getColor().getColorMiddle();
-		colorR = SensorManager.getInstance().getColor().getColorRight();
 	}
 
 	/**
