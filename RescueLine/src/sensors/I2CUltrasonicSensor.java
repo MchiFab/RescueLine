@@ -2,7 +2,6 @@ package sensors;
 
 import lejos.hardware.port.I2CPort;
 import lejos.hardware.sensor.I2CSensor;
-import lejos.hardware.sensor.SensorConstants;
 
 /**
  * Class used to handle an EV3-Ultrasonic-Sensor using an EV3-Sensor-Multiplexer
@@ -18,7 +17,7 @@ public class I2CUltrasonicSensor extends I2CSensor {
 
 	public I2CUltrasonicSensor(I2CPort port, int address) {
 		super(port, address);
-		sendData(EV3SensorMux.REG_SETMODE, EV3SensorMux.MODE_CM);
+		sendData(EV3SensorMux.REG_SETMODE, EV3SensorMux.MODE_MM);
 
 		distance = 0;
 		byteCount = 0;

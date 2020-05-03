@@ -1,10 +1,7 @@
 package assistants;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.Port;
-import lejos.robotics.MirrorMotor;
-import lejos.robotics.RegulatedMotor;
 
 /**
  * Class used to handle the Motors
@@ -13,7 +10,7 @@ import lejos.robotics.RegulatedMotor;
 public class Motors {
 	private static EV3LargeRegulatedMotor motorLeft;
 	private static EV3LargeRegulatedMotor motorRight;
-	private static EV3LargeRegulatedMotor motorMiddle;
+	// private static EV3LargeRegulatedMotor motorMiddle;
 
 	private static final int MOTOR_SPEED = 300;
 
@@ -30,13 +27,25 @@ public class Motors {
 	public static void initialize(Port left, Port middle, Port right) {
 		motorLeft = new EV3LargeRegulatedMotor(left);
 		motorRight = new EV3LargeRegulatedMotor(right);
-		motorMiddle = new EV3LargeRegulatedMotor(middle);
+		// motorMiddle = new EV3LargeRegulatedMotor(middle);
 
 		motorLeft.setSpeed(MOTOR_SPEED);
 		motorRight.setSpeed(MOTOR_SPEED);
-		motorMiddle.setSpeed(MOTOR_SPEED);
+		// motorMiddle.setSpeed(MOTOR_SPEED);
 
+		// lockShovel();
 		motorLeft.synchronizeWith(new EV3LargeRegulatedMotor[] { (EV3LargeRegulatedMotor) motorRight });
+	}
+
+	public static void setSpeed(int speed) {
+		motorLeft.setSpeed(speed);
+		motorRight.setSpeed(speed);
+	}
+
+	public static void resetSpeed() {
+		motorLeft.setSpeed(MOTOR_SPEED);
+		motorRight.setSpeed(MOTOR_SPEED);
+		// motorMiddle.setSpeed(MOTOR_SPEED);
 	}
 
 	/**
@@ -77,32 +86,13 @@ public class Motors {
 		motorLeft.endSynchronization();
 	}
 
-	/**
-	 * Drive left
-	 * 
-	 * @param v Base velocity, right motor will have v * 1.5
-	 */
-	public static void DriveLeft(int v) {
-		motorLeft.startSynchronization();
+	public static void forwardTimed(int millisec) {
+		long t = System.currentTimeMillis() + millisec;
 
-		motorLeft.setSpeed(v);
-		motorRight.setSpeed((int) (v * 1.5));
+		while (System.currentTimeMillis() < t)
+			forward(0);
 
-		motorLeft.endSynchronization();
-	}
-
-	/**
-	 * Drive right
-	 * 
-	 * @param v Base velocity, left motor will have v * 1.5
-	 */
-	public static void DriveRight(int v) {
-		motorLeft.startSynchronization();
-
-		motorRight.setSpeed(v);
-		motorLeft.setSpeed((int) (v * 1.5));
-
-		motorLeft.endSynchronization();
+		stop(false);
 	}
 
 	/**
@@ -174,21 +164,28 @@ public class Motors {
 	}
 
 	/**
-	 * Stop motors
+	 * Stop Motors
+	 * 
+	 * @param immediateReaturn If true do not wait for the motor to actually stop
 	 */
-	public static void MotorStop() {
+	public static void stop(boolean immediateReaturn) {
 		motorLeft.startSynchronization();
 
-		motorLeft.stop();
-		motorRight.stop();
+		motorLeft.stop(immediateReaturn);
+		motorRight.stop(immediateReaturn);
 
 		motorLeft.endSynchronization();
 	}
 
+//	public static void lockShovel() {
+//		motorMiddle.rotate(-2000);
+//		motorMiddle.stop();
+//	}
+
 	/**
 	 * Dispose motors
 	 */
-	public static void Dispose() {
+	public static void dispose() {
 		if (motorLeft != null)
 			motorLeft.close();
 		if (motorRight != null)

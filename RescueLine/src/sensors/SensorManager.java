@@ -1,7 +1,6 @@
 package sensors;
 
 import lejos.hardware.port.Port;
-import lejos.hardware.port.SensorPort;
 
 /**
  * Class used to handle all the Sensors
@@ -31,11 +30,6 @@ public class SensorManager {
 		return color;
 	}
 
-	/**
-	 * Gets Gyro-Sensor from Multiplexer
-	 * 
-	 * @return
-	 */
 	public I2CGyroSensor getGyro() {
 		return gyro;
 	}
@@ -53,19 +47,19 @@ public class SensorManager {
 	 * @param muxPort     Port of Multiplexer
 	 */
 	public void initialize(Port colorRight, Port colorMiddle, Port colorLeft, Port muxPort) {
-		// color = new ColorSensor();
+		color = new ColorSensor();
 		mux = new EV3SensorMux(muxPort);
 		gyro = new I2CGyroSensor(mux.getPort(), EV3SensorMux.MUX_PORT_C2);
 		ultrasonic = new I2CUltrasonicSensor(mux.getPort(), EV3SensorMux.MUX_PORT_C1);
 
-		// color.initialize(colorRight, colorMiddle, colorLeft);
+		color.initialize(colorRight, colorMiddle, colorLeft);
 	}
 
 	/**
 	 * Dispose all sensors
 	 */
 	public void dispose() {
-		// color.dispose();
+		color.dispose();
 		mux.dispose();
 	}
 }

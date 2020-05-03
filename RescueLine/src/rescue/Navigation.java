@@ -1,9 +1,5 @@
 package rescue;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
 import assistants.*;
 import sensors.*;
 
@@ -15,11 +11,19 @@ import sensors.*;
 public class Navigation {
 
 	private boolean allowForward;
+	private boolean cornerActiveL;
+	private boolean cornerActiveR;
+
+	private float[] prevColorL;
+	private float[] prevColorR;
+
 	private Offset offset;
 
 	public Navigation() {
 		allowForward = true;
-		offset = offset.None;
+		cornerActiveL = true;
+		cornerActiveR = true;
+		offset = Offset.None;
 	}
 
 	public boolean isAllowForward() {
@@ -39,63 +43,110 @@ public class Navigation {
 	 * @param colorR Right Color-Sensor data
 	 */
 	public void check(float[] colorL, float[] colorM, float[] colorR) {
-		if (Colors.IsBlack(colorM)) {
+		updateColors(colorL, colorR);
+		checkCorners(colorL, colorR);
+
+		if (Colors.isBlack(colorM)) {
 			allowForward = true;
 			offset = Offset.None;
-		} else if (Colors.IsWhite(colorM)) {
-			if (Colors.IsWhite(colorL) && Colors.IsWhite(colorR)) {
+		} else if (Colors.isWhite(colorM)) {
+			if (Colors.isWhite(colorM) && Colors.isWhite(colorM)) {
 				allowForward = true;
 				offset = Offset.None;
 			}
 
-			if (Colors.IsBlack(colorR) || Colors.IsBlack(colorL)) {
+			if (Colors.isBlack(colorR) || Colors.isBlack(colorL)) {
 				allowForward = false;
-				offset = Colors.IsBlack(colorR) ? Offset.Right : Offset.Left;
+				offset = Colors.isBlack(colorR) ? Offset.Right : Offset.Left;
 			}
 		}
+
+		if (isObstacleAhead(SensorManager.getInstance().getUltrasonic().getDistance()))
+			avoidObstacle(colorM);
+
+		if (Colors.isWhite(colorL))
+			cornerActiveL = true;
+		if (Colors.isWhite(colorM))
+			cornerActiveR = true;
 	}
 
-	/**
-	 * Turn robot 180 degrees to the left
-	 */
-	public void turn180Left() {
+	public void turnLeft(int degree) {
 		SensorManager.getInstance().getGyro().resetAngleMax();
+		Motors.setSpeed(100);
 
-		while (SensorManager.getInstance().getGyro().getAngle() > 180) {
-			Motors.rotateLeft(10, true);
-		}
+		while (SensorManager.getInstance().getGyro().getAngle() > (360 - degree))
+			Motors.rotateLeft(5, true);
+
+		Motors.stop(true);
+		Motors.resetSpeed();
 	}
 
-	/**
-	 * Turn robot 180 degrees to the right
-	 */
-	public void turn180Right() {
+	public void turnRight(int degree) {
 		SensorManager.getInstance().getGyro().resetAngleMin();
+		Motors.setSpeed(100);
 
-		while (SensorManager.getInstance().getGyro().getAngle() < 180) {
-			Motors.rotateRight(10, true);
+		while (SensorManager.getInstance().getGyro().getAngle() < degree)
+			Motors.rotateRight(5, true);
+		Motors.stop(true);
+		Motors.resetSpeed();
+	}
+
+	private void updateColors(float[] colorL, float[] colorR) {
+		prevColorL = colorL;
+		prevColorR = colorR;
+	}
+
+	/**
+	 * Check for corner marks on the path and changes direction accordingly
+	 * 
+	 * @param colorL Left Color-Sensor data
+	 * @param colorR Right Color-Sensor data
+	 */
+	private void checkCorners(float[] colorL, float[] colorR) {
+		if (Colors.isYellow(colorL) || Colors.isYellow(colorR)) {
+			if (Colors.isYellow(colorL) && Colors.isBlack(prevColorL))
+				cornerActiveL = false;
+			if (Colors.isYellow(colorR) && Colors.isBlack(prevColorR))
+				cornerActiveR = false;
+
+			if (cornerActiveL && cornerActiveR) {
+				if (Colors.isYellow(colorL) && Colors.isYellow(colorR))
+					turnLeft(180);
+			}
+
+			if (cornerActiveL)
+				if (Colors.isYellow(colorL))
+					turnLeft(80);
+
+			if (cornerActiveR)
+				if (Colors.isYellow(colorR))
+					turnRight(80);
 		}
 	}
 
 	/**
-	 * Turn robot 90 degrees to the left
+	 * Check if robot is approaching obstacle
+	 * 
+	 * @param distance Distance measured by Ultrasonic-Sensor
+	 * @return True if robot is less than 10 cm away from obstacle
 	 */
-	public void turn90Left() {
-		SensorManager.getInstance().getGyro().resetAngleMax();
-
-		while (SensorManager.getInstance().getGyro().getAngle() > 270) {
-			Motors.rotateLeft(10, true);
-		}
+	private boolean isObstacleAhead(int distance) {
+		return distance < 100;
 	}
 
 	/**
-	 * Turn robot 90 degrees to the right
+	 * Preprogrammed course to avoid an obstacle on to the left side
+	 * 
+	 * @param colorM Middle-Color-Sensor data
 	 */
-	public void turn90Right() {
-		SensorManager.getInstance().getGyro().resetAngleMin();
+	private void avoidObstacle(float[] colorM) {
+		turnLeft(45);
+		Motors.forwardTimed(3000);
 
-		while (SensorManager.getInstance().getGyro().getAngle() < 90) {
-			Motors.rotateRight(10, true);
-		}
+		turnRight(45);
+		Motors.forwardTimed(2000);
+
+		turnRight(45);
+		Motors.forward(0);
 	}
 }
